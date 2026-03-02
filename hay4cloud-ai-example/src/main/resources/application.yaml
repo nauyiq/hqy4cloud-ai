@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ai-example
+  ai:
+    dashscope:
+      api-key: sk-76c7d08bfa2441679046816a61e96d19
