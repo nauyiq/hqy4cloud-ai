@@ -24,6 +24,7 @@
 
         <springboot.version>3.5.8</springboot.version>
         <spring.ai.alibaba.version>1.1.0.0</spring.ai.alibaba.version>
+        <spring.ai.ollama.version>1.1.0</spring.ai.ollama.version>
     </properties>
 
 
@@ -54,9 +55,21 @@
                 <artifactId>spring-ai-alibaba-starter-dashscope</artifactId>
                 <version>${spring.ai.alibaba.version}</version>
             </dependency>
+
+            <!-- spring-ai ollama -->
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-autoconfigure-model-ollama</artifactId>
+                <version>${spring.ai.ollama.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-ollama</artifactId>
+                <version>${spring.ai.ollama.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
-
 
     <dependencies>
         <dependency>

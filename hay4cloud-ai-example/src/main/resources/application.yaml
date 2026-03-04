@@ -5,6 +5,10 @@ spring:
   application:
     name: ai-example
   ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        model: qwen3-vl:4b
     dashscope:
       api-key: sk-e629a44396154f1ba569cc7e437e41d7
 
