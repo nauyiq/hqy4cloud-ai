@@ -25,6 +25,9 @@
         <springboot.version>3.5.8</springboot.version>
         <spring.ai.alibaba.version>1.1.0.0</spring.ai.alibaba.version>
         <spring.ai.ollama.version>1.1.0</spring.ai.ollama.version>
+        <spring.ai.openai.version>1.1.0</spring.ai.openai.version>
+        <langChain4j.version>1.8.0</langChain4j.version>
+        <langChain4j.springboot.version>1.8.0-beta15</langChain4j.springboot.version>
     </properties>
 
 
@@ -68,6 +71,26 @@
                 <version>${spring.ai.ollama.version}</version>
             </dependency>
 
+            <!-- LangChain4j -->
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j</artifactId>
+                <version>${langChain4j.version}</version>
+            </dependency>
+
+            <!-- LangChain4j.springboot.starter -->
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
+                <version>${langChain4j.springboot.version}</version>
+            </dependency>
+
+            <!-- spring-ai openai -->
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-starter-model-openai</artifactId>
+                <version>${spring.ai.openai.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
