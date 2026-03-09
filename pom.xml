@@ -5,14 +5,15 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.hqy.cloud.llm</groupId>
-    <artifactId>hqy4cloud-ai</artifactId>
+    <groupId>com.hqy.ai</groupId>
+    <artifactId>hqy4ai</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
 
     <description>AI FRAMEWORK</description>
+
     <modules>
-        <module>hay4cloud-ai-example</module>
+        <module>hqy4ai-example</module>
     </modules>
 
     <properties>
@@ -29,8 +30,6 @@
         <langChain4j.version>1.8.0</langChain4j.version>
         <langChain4j.springboot.version>1.8.0-beta15</langChain4j.springboot.version>
     </properties>
-
-
 
     <dependencyManagement>
         <dependencies>
