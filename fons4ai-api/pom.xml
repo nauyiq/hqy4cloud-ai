@@ -3,7 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>com.fons.cloud.ai</groupId>
         <artifactId>fons4ai</artifactId>
@@ -11,20 +10,25 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>fons4ai-example</artifactId>
+    <artifactId>fons4ai-api</artifactId>
+    <version>${revision}</version>
     <packaging>pom</packaging>
-
-    <modules>
-        <module>langchain4j-example</module>
-        <module>spring-ai-example</module>
-        <module>spring-ai-mcp-example</module>
-        <module>spring-ai-rag-example</module>
-    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <hutool.version>5.8.43</hutool.version>
     </properties>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+    </dependencies>
+
 
 </project>
