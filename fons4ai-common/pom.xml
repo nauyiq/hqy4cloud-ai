@@ -14,6 +14,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>fons4ai-common-tools</module>
+        <module>fons4ai-common-api</module>
+        <module>fons4ai-common-ocr</module>
     </modules>
 
 </project>

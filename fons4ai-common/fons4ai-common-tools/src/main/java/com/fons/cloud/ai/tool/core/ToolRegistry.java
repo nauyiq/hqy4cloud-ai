@@ -18,6 +18,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 public class ToolRegistry  {
+    private static final ToolRegistry INSTANCE = new ToolRegistry();
+
+    public static ToolRegistry getInstance() {
+        return INSTANCE;
+    }
+
+    private ToolRegistry() {
+    }
+
     private final Map<String, ToolProvider> PROVIDERS = new ConcurrentHashMap<>();
     private final Map<String, ToolInfo> ALL_TOOLS = new ConcurrentHashMap<>();
 

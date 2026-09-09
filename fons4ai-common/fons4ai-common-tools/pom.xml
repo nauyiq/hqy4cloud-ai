@@ -15,9 +15,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.fons.cloud</groupId>
-            <artifactId>fons4cloud-common-util</artifactId>
-            <version>${fons4cloud.revision}</version>
+            <groupId>com.fons.cloud.ai</groupId>
+            <artifactId>fons4ai-common-api</artifactId>
+            <version>${revision}</version>
         </dependency>
     </dependencies>
 

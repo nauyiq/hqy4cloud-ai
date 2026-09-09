@@ -23,6 +23,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.fons.cloud.ai</groupId>
+            <artifactId>fons4ai-common-tools</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-api</artifactId>
             <version>${opentelemetry.version}</version>

@@ -230,4 +230,21 @@ class MarkdownHeaderParentSplitterTest {
 
         assertTrue(segments.stream().anyMatch(segment -> segment.text().contains("第一段\n\n第二段")));
     }
+
+    /** 跨来源范围的标题续写必须保持标题语义并回传全部来源。 */
+    @Test
+    void shouldKeepHeaderContextAndSourcesAcrossInputRanges() {
+        String markdown = "# 标题\n\n第一页正文\n第二页续写";
+        int secondPageStart = markdown.indexOf("第二页续写");
+        MarkdownHeaderParentSplitter splitter = new MarkdownHeaderParentSplitter(1, 0, 0);
+
+        List<MarkdownHeaderParentSplitter.SourcedTextSegment> segments = splitter.split(
+                Document.from(markdown), List.of(
+                        new MarkdownHeaderParentSplitter.SourceRange(0, secondPageStart - 1, "page-1"),
+                        new MarkdownHeaderParentSplitter.SourceRange(secondPageStart, markdown.length(), "page-2")));
+
+        assertEquals(1, segments.size());
+        assertTrue(segments.getFirst().segment().text().contains("# 标题"));
+        assertEquals(List.of("page-1", "page-2"), segments.getFirst().sourceIds());
+    }
 }

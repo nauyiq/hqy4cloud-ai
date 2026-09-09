@@ -14,8 +14,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>fons4ai-agent-common</module>
-        <module>fons4ai-agent-spring-ai-starter</module>
-        <module>fons4ai-agent-langchain-starter</module>
+        <module>fons4ai-springai-starter</module>
+        <module>fons4ai-langchain4j-starter</module>
+        <module>fons4ai-agentscope-starter</module>
     </modules>
 
 </project>

@@ -12,7 +12,12 @@ import com.fons.cloud.ai.tool.common.constants.ToolCategory;
 public record ToolInfo(String toolName, String providerName, ToolCategory category){
 
 
+    public boolean isSearch() {
+        return category == ToolCategory.SEARCH;
+    }
 
 
-
+    public boolean isExtract() {
+        return category == ToolCategory.EXTRACT;
+    }
 }
