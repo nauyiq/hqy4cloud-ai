@@ -31,6 +31,7 @@
         <source.plugin.version>3.0.1</source.plugin.version>
         <flatten.maven.plugin>1.1.0</flatten.maven.plugin>
         <maven.jar.plugin.version>3.1.1</maven.jar.plugin.version>
+        <maven.surefire.plugin.version>3.5.4</maven.surefire.plugin.version>
 
         <!-- spring相关 -->
         <springboot.version>3.5.8</springboot.version>
@@ -41,6 +42,9 @@
         <langChain4j.version>1.11.0</langChain4j.version>
         <langChain4j.elastic.version>1.11.0-beta19</langChain4j.elastic.version>
         <langChain4j.springboot.version>1.11.0-beta19</langChain4j.springboot.version>
+
+        <!-- AgentScope相关 -->
+        <agentscope.version>2.0.3</agentscope.version>
     </properties>
 
     <dependencyManagement>
@@ -79,6 +83,13 @@
             <dependency>
                 <groupId>org.springframework.ai</groupId>
                 <artifactId>spring-ai-ollama</artifactId>
+                <version>${spring.ai.version}</version>
+            </dependency>
+
+            <!-- spring-ai openai -->
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-starter-model-openai</artifactId>
                 <version>${spring.ai.version}</version>
             </dependency>
 
@@ -153,15 +164,23 @@
             </dependency>
             <!-- LangChain4j end -->
 
-
-            <!-- spring-ai openai -->
+            <!-- AgentScope -->
             <dependency>
-                <groupId>org.springframework.ai</groupId>
-                <artifactId>spring-ai-starter-model-openai</artifactId>
-                <version>${spring.ai.version}</version>
+                <groupId>io.agentscope</groupId>
+                <artifactId>agentscope-harness</artifactId>
+                <version>${agentscope.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <!-- 统一测试框架，所有子模块继承且仅在测试阶段生效 -->
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <resources>
@@ -199,6 +218,13 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+
+            <!-- 统一使用 JUnit Platform 执行单元测试 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
             </plugin>
 
             <!-- 全局采用flatten-maven-plugin统一版本号， 所有的pom和子项目版本只需要使用${revision}即可 -->

@@ -7,7 +7,6 @@ import com.fons.cloud.ai.agent.model.request.AgentInputContent;
 import com.fons.cloud.ai.agent.model.request.AgentInputContentType;
 import com.fons.cloud.ai.agent.model.request.AgentRequest;
 import com.fons.cloud.ai.agent.model.response.AgentResultCode;
-import com.fons.cloud.ai.agent.model.runtime.AgentRunContext;
 import com.fons.cloud.ai.agent.model.runtime.AgentRunState;
 import com.fons.cloud.ai.agent.model.runtime.RuntimeActions;
 import com.fons.cloud.common.base.exception.BizException;
@@ -63,7 +62,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Slf4j
 @SuperBuilder
-public class ReactAgent extends BaseAgent {
+public class ReactAgent extends BaseAgent<DefaultAgentRunContext> {
 
     /**
      * LangChain4j流式AI Service
@@ -110,8 +109,8 @@ public class ReactAgent extends BaseAgent {
     }
 
     @Override
-    protected Disposable streamExecute(AgentRunContext context, RuntimeActions actions) {
-        DefaultAgentRunContext runContext = (DefaultAgentRunContext) context;
+    protected Disposable streamExecute(DefaultAgentRunContext context, RuntimeActions actions) {
+        DefaultAgentRunContext runContext = context;
         return Flux.defer(() -> {
                     if (runContext.getState() != AgentRunState.RUNNING) {
                         return Flux.empty();
@@ -140,7 +139,7 @@ public class ReactAgent extends BaseAgent {
     }
 
     @Override
-    protected AgentRunContext createRunContext(AgentRequest request) {
+    protected DefaultAgentRunContext createRunContext(AgentRequest request) {
         return DefaultAgentRunContext.builder()
                 .runId(IdUtil.fastSimpleUUID())
                 .messageId(request.getMessageId())

@@ -69,11 +69,13 @@ import reactor.core.Disposable;
  *         actions 发射事件，也不得再调用 complete / failed / cancelled。</li>
  *     </ol>
  * </p>
+ *
+ * @param <C> 当前Agent使用的具体RunContext类型
  * @author hongqy
  */
 @Slf4j
 @SuperBuilder
-public abstract class BaseAgent implements Agent {
+public abstract class BaseAgent<C extends AgentRunContext> implements Agent {
 
     /**
      * Agent名称
@@ -126,7 +128,7 @@ public abstract class BaseAgent implements Agent {
         validateInputContents(request);
 
         // 创建上下文对象
-        AgentRunContext context = createRunContext(request);
+        C context = createRunContext(request);
         Assert.notNull(context, () -> BusinessRuntimeException.of(AgentResultCode.CHAT_MESSAGES_IS_EMPTY));
         // 创建Agent运行行为对象
         RuntimeActions actions = createActions(context);
@@ -176,7 +178,7 @@ public abstract class BaseAgent implements Agent {
      * @param actions 运行时行为封装
      * @return
      */
-    protected AgentRun createRunHandle(AgentRunContext context, RuntimeActions actions) {
+    protected AgentRun createRunHandle(C context, RuntimeActions actions) {
         return BaseAgentRun.builder()
                 .context(context)
                 .actions(actions)
@@ -190,7 +192,7 @@ public abstract class BaseAgent implements Agent {
      * @param context
      * @param actions
      */
-    protected void startAction(AgentRunContext context, RuntimeActions actions) {
+    protected void startAction(C context, RuntimeActions actions) {
         // 设置启动状态, 默认为运行中
         if (!context.tryStart()) {
             log.warn("Agent task already started, runId:{}.", context.getRunId());
@@ -256,7 +258,7 @@ public abstract class BaseAgent implements Agent {
      * @param actions 运行时行为封装
      * @return
      */
-    protected boolean runCancelled(AgentRunContext context, RuntimeActions actions) {
+    protected boolean runCancelled(C context, RuntimeActions actions) {
         // 取消请求只接受已启动且已进入注册流程的 Run；不能把尚未注册的 CREATED Run
         // 伪装成已取消，否则后续首次订阅将永远无法启动。
         if (context.getState() == AgentRunState.CREATED) {
@@ -298,7 +300,7 @@ public abstract class BaseAgent implements Agent {
      * @param toolName 工具名称
      * @param rawResult 工具原始响应
      */
-    protected final void toolFinished(AgentRunContext context,
+    protected final void toolFinished(C context,
                                       RuntimeActions actions,
                                       String callId,
                                       String toolName,
@@ -339,14 +341,14 @@ public abstract class BaseAgent implements Agent {
      * @param context
      * @param actions
      */
-    protected void complete(AgentRunContext context, RuntimeActions actions) {
+    protected void complete(C context, RuntimeActions actions) {
         this.finishRun(context, AgentRunState.COMPLETED, actions, null, ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage());
     }
 
     /**
      * 子类在流执行异常时调用，统一进入失败终态和资源清理。
      */
-    protected void failed(AgentRunContext context, RuntimeActions actions, Throwable cause,
+    protected void failed(C context, RuntimeActions actions, Throwable cause,
                           String errorCode, String errorMessage) {
         this.finishRun(context, AgentRunState.FAILED, actions, cause, errorCode, errorMessage);
     }
@@ -360,7 +362,7 @@ public abstract class BaseAgent implements Agent {
      * <p>WAITING_APPROVAL 状态下收到的 CANCEL 来自暂停原语自身释放订阅的收尾信号，
      * 不是用户取消，直接跳过收口，保持审批等待状态。</p>
      */
-    protected void cancelled(AgentRunContext context, RuntimeActions actions) {
+    protected void cancelled(C context, RuntimeActions actions) {
         if (context.getState() == AgentRunState.WAITING_APPROVAL) {
             return;
         }
@@ -379,7 +381,7 @@ public abstract class BaseAgent implements Agent {
      * @param actions      本次请求的资源与事件权柄
      * @param humanInTheLoopInfo      HITL载荷
      */
-    protected void pauseForApproval(AgentRunContext context, RuntimeActions actions, HumanInTheLoopInfo humanInTheLoopInfo) {
+    protected void pauseForApproval(C context, RuntimeActions actions, HumanInTheLoopInfo humanInTheLoopInfo) {
         // CAS 切换状态并记录审批标识，保证唯一性
         if (!context.tryPauseForApproval(humanInTheLoopInfo)) {
             throw BusinessRuntimeException.of(AgentResultCode.TRANSITION_APPROVAL_STATE_ERROR);
@@ -411,13 +413,13 @@ public abstract class BaseAgent implements Agent {
      * @param actions 本次请求的资源与事件权柄
      * @param message 拒绝原因，可为 null
      */
-    protected final void rejectApproval(AgentRunContext context, RuntimeActions actions, String message) {
+    protected final void rejectApproval(C context, RuntimeActions actions, String message) {
         this.finishRun(context, AgentRunState.APPROVAL_REJECTED, actions, null,
                 AgentResultCode.APPROVAL_MISMATCH.getCode(),
                 StringUtils.defaultIfBlank(message, "Agent action was rejected"));
     }
 
-    protected void finishRun(AgentRunContext context, AgentRunState terminalState, RuntimeActions actions, Throwable cause, String errorCode, String errorMessage) {
+    protected void finishRun(C context, AgentRunState terminalState, RuntimeActions actions, Throwable cause, String errorCode, String errorMessage) {
         // 设置结束状态
         if (!context.tryFinalize(terminalState)) {
             return;
@@ -453,7 +455,7 @@ public abstract class BaseAgent implements Agent {
         }
     }
 
-    protected void safelyReleaseResource(AgentRunState terminalState, AgentRunContext context, RuntimeActions actions) {
+    protected void safelyReleaseResource(AgentRunState terminalState, C context, RuntimeActions actions) {
         if (terminalState.isTerminal()) {
             // 释放资源
             actions.releaseAll();
@@ -465,7 +467,7 @@ public abstract class BaseAgent implements Agent {
     /**
      * 尽最大努力释放任务句柄和分布式租约。
      */
-    private void safelyCompleteTask(AgentRunContext context) {
+    private void safelyCompleteTask(C context) {
         try {
             AgentTaskReleaseRequest request = AgentTaskReleaseRequest.builder()
                     .conversationId(context.getConversationId())
@@ -486,14 +488,14 @@ public abstract class BaseAgent implements Agent {
      *                onComplete / onError / doFinally(CANCEL) 中调用框架提供的
      *                complete / failed / cancelled 方法。
      */
-    protected abstract Disposable streamExecute(AgentRunContext context, RuntimeActions actions);
+    protected abstract Disposable streamExecute(C context, RuntimeActions actions);
 
     /**
      * 创建运行时上下文对象
      * @param request 请求对象
      * @return
      */
-    protected abstract AgentRunContext createRunContext(AgentRequest request);
+    protected abstract C createRunContext(AgentRequest request);
 
     /**
      * 创建运行时行为对象
@@ -501,7 +503,7 @@ public abstract class BaseAgent implements Agent {
      * @param context
      * @return
      */
-    protected RuntimeActions createActions(AgentRunContext context) {
+    protected RuntimeActions createActions(C context) {
         return RuntimeActions.builder()
                 .agentRunContext(context)
                 .build();

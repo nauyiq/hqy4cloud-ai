@@ -23,7 +23,6 @@ import com.fons.cloud.ai.agent.model.request.AgentInputContent;
 import com.fons.cloud.ai.agent.model.request.AgentInputContentType;
 import com.fons.cloud.ai.agent.model.request.AgentRequest;
 import com.fons.cloud.ai.agent.model.request.HitlRequestInfo;
-import com.fons.cloud.ai.agent.model.runtime.AgentRunContext;
 import com.fons.cloud.ai.agent.model.runtime.AgentRunState;
 import com.fons.cloud.ai.agent.model.runtime.RuntimeActions;
 import com.fons.cloud.common.base.exception.SystemIntervalException;
@@ -60,7 +59,7 @@ import java.util.Map;
  */
 @Slf4j
 @SuperBuilder
-public class ReactAgent extends BaseAgent {
+public class ReactAgent extends BaseAgent<DefaultAgentRunContext> {
 
     /**
      * 委托Agent
@@ -115,8 +114,8 @@ public class ReactAgent extends BaseAgent {
     }
 
     @Override
-    protected Disposable streamExecute(AgentRunContext context, RuntimeActions actions) {
-        DefaultAgentRunContext runContext = (DefaultAgentRunContext) context;
+    protected Disposable streamExecute(DefaultAgentRunContext context, RuntimeActions actions) {
+        DefaultAgentRunContext runContext = context;
         // 将初始化、checkpoint I/O 和建流纳入订阅；尽早返回可取消的任务句柄。
         return Flux.defer(() -> {
                     if (runContext.getState() != AgentRunState.RUNNING) {
@@ -154,7 +153,7 @@ public class ReactAgent extends BaseAgent {
     }
 
     @Override
-    protected AgentRunContext createRunContext(AgentRequest request) {
+    protected DefaultAgentRunContext createRunContext(AgentRequest request) {
         return DefaultAgentRunContext.builder()
                 .runId(IdUtil.fastSimpleUUID())
                 .messageId(request.getMessageId())
@@ -394,15 +393,14 @@ public class ReactAgent extends BaseAgent {
     }
 
     @Override
-    protected void safelyReleaseResource(AgentRunState terminalState, AgentRunContext context, RuntimeActions actions) {
+    protected void safelyReleaseResource(AgentRunState terminalState, DefaultAgentRunContext context, RuntimeActions actions) {
         super.safelyReleaseResource(terminalState, context, actions);
         if (terminalState.isTerminal() && checkpointSaver != null) {
-            DefaultAgentRunContext runContext = (DefaultAgentRunContext) context;
-            if (runContext.getRunnableConfig() != null) {
+            if (context.getRunnableConfig() != null) {
                 try {
-                    checkpointSaver.release(runContext.getRunnableConfig());
+                    checkpointSaver.release(context.getRunnableConfig());
                 } catch (Exception e) {
-                    log.error("Failed execute release checkpoint saver, threadId:{}", runContext.getRunnableConfig().threadId().orElse(null), e);
+                    log.error("Failed execute release checkpoint saver, threadId:{}", context.getRunnableConfig().threadId().orElse(null), e);
                 }
             }
         }

@@ -29,7 +29,6 @@ public final class AgentRunResult {
      */
     private final String messageId;
 
-
     /**
      * 不可逆终态
      */

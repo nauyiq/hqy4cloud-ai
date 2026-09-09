@@ -1,7 +1,6 @@
 package com.fons.cloud.ai.rag.infrastructure.config;
 
 import com.fons.cloud.ai.capability.multimodal.ImageRecognitionService;
-import com.fons.cloud.ai.rag.document.reader.support.ImageReadStrategy;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
